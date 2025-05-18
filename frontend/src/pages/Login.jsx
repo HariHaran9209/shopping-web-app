@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
+import { StoreContext } from '../context/StoreContext'
 import axios from 'axios'
 import { Link, useNavigate } from 'react-router-dom'
 
@@ -7,7 +8,7 @@ const Login = () => {
   const [error, setError] = useState(false)
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
-  const url = 'http://localhost:4000'
+  const { url, setToken } = useContext(StoreContext)
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value })
@@ -19,16 +20,22 @@ const Login = () => {
       setLoading(true)
       const response = await axios.post(`${url}/api/user/login`, formData)
       setLoading(false)
-      if (response.data.success === false) {
-        setError(true)
+      if (response.data.success === true) {
+        setToken(response.data.token)
+        localStorage.setItem('token', response.data.token)
+        console.log(response.data.token)
+        console.log(response)
+        navigate('/')
+      } else {
+        setError(error.response?.data?.message || "Something went wrong");
         console.log(response.data)
         return
       }
-      console.log(response)
+      
       navigate('/')
     } catch (error) {
       setLoading(false)
-      setError(true)
+      setError(error.response?.data?.message || "Something went wrong");
     }
   }
 

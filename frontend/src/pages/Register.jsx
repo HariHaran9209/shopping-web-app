@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [formData, setFormData] = useState({});
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const url = "http://localhost:4000";
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -17,10 +18,11 @@ const Register = () => {
     try {
       setLoading(true);
       const response = await axios.post(`${url}/api/user/register`, formData);
+      navigate('/login')
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      setError(true);
+      setError(error.response?.data?.message || "Something went wrong");
     }
   };
 
